@@ -1,0 +1,20 @@
+name: SimplisticPing
+version: '${project.version}'
+main: me.lojosho.simplisticping.Main
+api-version: 1.18
+authors: [ LoJoSho ]
+description: A simplistic ping plugin
+commands:
+  ping:
+    description: Displays the ping of a player
+    permission: simplisticping.use
+permissions:
+  simplisticping.use:
+    default: true
+    description: Shows a player their own ping
+  simplisticping.other:
+    default: false
+    description: Shows another players ping
+  simplisticping.reload:
+    default: false
+    description: Reloads the plugin

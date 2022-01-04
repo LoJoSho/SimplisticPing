@@ -1,0 +1,12 @@
+# Variables:
+# <Ping> = Ping of the player.
+# <Name> = Name of the person who sent the command. (Not recommended)!
+# <Player> = Name of the person pinged.
+
+Messages:
+  Console: "<red>You can't get the ping of the console!</red>"
+  Player: "<color:#99ff99>Your ping is: <color:#55FF55><ping>ms"
+  OtherPlayer: "<color:#99ff99><Player> ping is: <color:#55FF55><ping>"
+  UnknownPlayer: "<red>Unable to find that player!</red>"
+  NoPermission: "<red>No permission!</red>"
+  Reload: "<red>Reloaded Plugin</red>"
