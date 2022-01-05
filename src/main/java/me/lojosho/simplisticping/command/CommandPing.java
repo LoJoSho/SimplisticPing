@@ -25,10 +25,12 @@ public class CommandPing implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        // Checks to see if the command comes fron the console. If it does, then it should have an argument with it
         if (!(sender instanceof Player) && args.length == 0) {
             sender.sendMessage(MiniMessage.get().parse(plugin.getConfig().getString("Messages.Console")));
             return true;
         }
+        // Checks if the player is trying to reload the plugin
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             if (sender.hasPermission("simplisticping.reload") || sender.isOp() || !(sender instanceof Player)) {
                 plugin.reloadConfig();
@@ -40,8 +42,8 @@ public class CommandPing implements CommandExecutor {
         /*
         Set's up the player which we will be getting their ping from.
         We first default it to the sender, then if there is an argument, use that instead.
+        If the argument points to a player that the server doesn't know about out, then it returns unknown player.
          */
-
         player = Bukkit.getPlayer(sender.getName());
         if (args.length == 1) {
             if (Bukkit.getPlayer(args[0]) != null) {
@@ -57,14 +59,15 @@ public class CommandPing implements CommandExecutor {
                 Template.of("Player", player.getName()));
 
         /*
-        Deals with the actual ping message.
+        Deals with the actual ping message. First checks if there is an argument, meaning it's getting the ping of another player.
+        Depending on the length and permissions, it will give out a different message.
+
+        Checking for args.length several times is a bit inefficient, however, it leads to much cleaner code here.
          */
         if (args.length == 1) {
             if (sender.hasPermission("simplisticping.other") || sender.isOp() || !(sender instanceof Player)) {
-                if (Bukkit.getPlayer(args[0]) != null) {
-                    sender.sendMessage(MiniMessage.get().parse(plugin.getConfig().getString("Messages.OtherPlayer"), templates));
-                    return true;
-                }
+                sender.sendMessage(MiniMessage.get().parse(plugin.getConfig().getString("Messages.OtherPlayer"), templates));
+                return true;
             } else {
                 sender.sendMessage(MiniMessage.get().parse(plugin.getConfig().getString("Messages.NoPermission"), templates));
                 return true;
@@ -73,6 +76,5 @@ public class CommandPing implements CommandExecutor {
             sender.sendMessage(MiniMessage.get().parse(plugin.getConfig().getString("Messages.Player"), templates));
             return true;
         }
-        return false;
     }
 }
