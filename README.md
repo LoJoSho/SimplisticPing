@@ -1,5 +1,8 @@
 # SimplisticPing
 
+Download: https://github.com/LoJoSho/SimplisticPing/releases
+Paper Forum Post: https://forums.papermc.io/threads/simplisticping-a-ping-plugin.15/
+
 Why a ping plugin? Well, because I couldn't find a good one, that's why. SimplisticPing has
 
 * MiniMessage Support
