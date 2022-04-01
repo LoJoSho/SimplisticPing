@@ -2,7 +2,8 @@ package me.lojosho.simplisticping.command;
 
 import me.lojosho.simplisticping.Main;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,12 +11,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 public class CommandPing implements CommandExecutor {
 
     Player player;
-    List<Template> templates;
+    TagResolver placeholders;
+    MiniMessage miniMessage = MiniMessage.miniMessage();
 
     private final Main plugin;
 
@@ -27,14 +27,15 @@ public class CommandPing implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         // Checks to see if the command comes fron the console. If it does, then it should have an argument with it
         if (!(sender instanceof Player) && args.length == 0) {
-            sender.sendMessage(MiniMessage.get().parse(plugin.getConfig().getString("Messages.Console")));
+
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("Messages.Console")));
             return true;
         }
         // Checks if the player is trying to reload the plugin
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             if (sender.hasPermission("simplisticping.reload") || sender.isOp() || !(sender instanceof Player)) {
                 plugin.reloadConfig();
-                sender.sendMessage(MiniMessage.get().parse(plugin.getConfig().getString("Messages.Reload")));
+                sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("Messages.Reload")));
                 return true;
             }
         }
@@ -49,14 +50,18 @@ public class CommandPing implements CommandExecutor {
             if (Bukkit.getPlayer(args[0]) != null) {
                 player = Bukkit.getPlayer(args[0]);
             } else {
-                sender.sendMessage(MiniMessage.get().parse(plugin.getConfig().getString("Messages.UnknownPlayer")));
+                sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("Messages.UnknownPlayer")));
                 return true;
             }
         }
 
-        templates = List.of(Template.of("name", sender.getName()),
-                Template.of("ping", Integer.toString(player.getPing())),
-                Template.of("Player", player.getName()));
+        placeholders =
+                TagResolver.resolver(Placeholder.parsed("name", sender.getName()),
+                TagResolver.resolver(Placeholder.parsed("ping", Integer.toString(player.getPing())),
+                        TagResolver.resolver(Placeholder.parsed("player", player.getName()))));
+
+
+
 
         /*
         Deals with the actual ping message. First checks if there is an argument, meaning it's getting the ping of another player.
@@ -66,14 +71,14 @@ public class CommandPing implements CommandExecutor {
          */
         if (args.length == 1) {
             if (sender.hasPermission("simplisticping.other") || sender.isOp() || !(sender instanceof Player)) {
-                sender.sendMessage(MiniMessage.get().parse(plugin.getConfig().getString("Messages.OtherPlayer"), templates));
+                sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("Messages.OtherPlayer"), placeholders));
                 return true;
             } else {
-                sender.sendMessage(MiniMessage.get().parse(plugin.getConfig().getString("Messages.NoPermission"), templates));
+                sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("Messages.NoPermission"), placeholders));
                 return true;
             }
         } else {
-            sender.sendMessage(MiniMessage.get().parse(plugin.getConfig().getString("Messages.Player"), templates));
+            sender.sendMessage(miniMessage.deserialize(plugin.getConfig().getString("Messages.Player"), placeholders));
             return true;
         }
     }
