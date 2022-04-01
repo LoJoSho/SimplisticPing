@@ -3,6 +3,7 @@ version: '${project.version}'
 main: me.lojosho.simplisticping.Main
 api-version: 1.18
 authors: [ LoJoSho ]
+website: https://github.com/LoJoSho/SimplisticPing
 description: A simplistic ping plugin
 commands:
   ping:
